@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+                   logicalFilePath="db.changelog-data-default.xml">
+
+    <changeSet id="seed-data-1" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM access_group WHERE name = 'admin';
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="access_group">
+            <column name="name">admin</column>
+        </insert>
+        <insert tableName="access_role">
+            <column name="name">ROLE_ADMIN</column>
+        </insert>
+        <insert tableName="access_group_access_role">
+            <column name="access_group_id" valueComputed="(SELECT id FROM access_group WHERE name = 'admin')"/>
+            <column name="access_role_id" valueComputed="(SELECT id FROM access_role WHERE name = 'ROLE_ADMIN')"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="seed-data-2" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM access_group WHERE name = 'user';
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="access_group">
+            <column name="name">user</column>
+        </insert>
+        <insert tableName="access_role">
+            <column name="name">ROLE_USER</column>
+        </insert>
+        <insert tableName="access_group_access_role">
+            <column name="access_group_id" valueComputed="(SELECT id FROM access_group WHERE name = 'user')"/>
+            <column name="access_role_id" valueComputed="(SELECT id FROM access_role WHERE name = 'ROLE_USER')"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="seed-data-3" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM access_group WHERE name = 'guest';
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="access_group">
+            <column name="name">guest</column>
+        </insert>
+        <insert tableName="access_role">
+            <column name="name">ROLE_GUEST</column>
+        </insert>
+        <insert tableName="access_group_access_role">
+            <column name="access_group_id" valueComputed="(SELECT id FROM access_group WHERE name = 'guest')"/>
+            <column name="access_role_id" valueComputed="(SELECT id FROM access_role WHERE name = 'ROLE_GUEST')"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="seed-data-4" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM user_profile WHERE login = '1';
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="user_profile">
+            <column name="login">1</column>
+            <column name="password">{noop}1</column>
+            <column name="name">username</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="seed-data-5" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM user_access_group
+                WHERE user_id = (SELECT id FROM user_profile WHERE login = '1')
+                AND access_group_id = (SELECT id FROM access_group WHERE name = 'admin');
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="user_access_group">
+            <column name="user_id" valueComputed="(SELECT id FROM user_profile WHERE login = '1')"/>
+            <column name="access_group_id" valueComputed="(SELECT id FROM access_group WHERE name = 'admin')"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="seed-data-6" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM user_profile WHERE login = 'guest';
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="user_profile">
+            <column name="login">guest</column>
+            <column name="password">{noop}guest</column>
+            <column name="name">guest</column>
+        </insert>
+    </changeSet>
+
+    <changeSet id="seed-data-7" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT count(*) FROM user_access_group
+                WHERE user_id = (SELECT id FROM user_profile WHERE login = 'guest')
+                AND access_group_id = (SELECT id FROM access_group WHERE name = 'guest');
+            </sqlCheck>
+        </preConditions>
+        <insert tableName="user_access_group">
+            <column name="user_id" valueComputed="(SELECT id FROM user_profile WHERE login = 'guest')"/>
+            <column name="access_group_id" valueComputed="(SELECT id FROM access_group WHERE name = 'guest')"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

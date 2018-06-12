@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd"
+                   logicalFilePath="db.changelog.xml">
+
+    <changeSet id="seed-1" author="tim">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_profile"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_profile" remarks="Users">
+            <column name="id" type="bigserial" autoIncrement="true" remarks="Identifier">
+                <constraints primaryKey="true" primaryKeyName="pk_user_id" nullable="false"/>
+            </column>
+            <column name="login" type="varchar(64)" remarks="Login">
+                <constraints nullable="false" unique="true" uniqueConstraintName="unq_user_login"/>
+            </column>
+            <column name="password" type="varchar(64)" remarks="Password">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="varchar(128)" remarks="Username">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="seed-2" author="tim">
+        <preConditions>
+            <not>
+                <tableExists tableName="access_group"/>
+            </not>
+        </preConditions>
+        <createTable tableName="access_group">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_access_group_id" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="unq_access_group_name"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="seed-3" author="tim">
+        <preConditions>
+            <not>
+                <tableExists tableName="user_access_group"/>
+            </not>
+        </preConditions>
+        <createTable tableName="user_access_group">
+            <column name="user_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_access_group_user" references="user_profile(id)"/>
+            </column>
+            <column name="access_group_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_user_access_group_group"
+                             references="access_group(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="seed-4" author="tim">
+        <preConditions>
+            <not>
+                <tableExists tableName="access_role"/>
+            </not>
+        </preConditions>
+        <createTable tableName="access_role">
+            <column name="id" type="bigserial" autoIncrement="true">
+                <constraints primaryKey="true" primaryKeyName="pk_access_role_id" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(64)">
+                <constraints nullable="false" unique="true" uniqueConstraintName="unq_access_role_name"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="seed-5" author="tim">
+        <preConditions>
+            <not>
+                <tableExists tableName="access_group_access_role"/>
+            </not>
+        </preConditions>
+        <createTable tableName="access_group_access_role">
+            <column name="access_group_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_group_role_group" references="access_group(id)"/>
+            </column>
+            <column name="access_role_id" type="bigint">
+                <constraints nullable="false" foreignKeyName="fk_group_role_role" references="access_role(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
